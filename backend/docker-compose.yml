@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ai_interview_coach_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: interview_coach
+      POSTGRES_PASSWORD: interview_coach_dev
+      POSTGRES_DB: interview_coach
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
