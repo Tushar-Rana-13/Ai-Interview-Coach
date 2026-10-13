@@ -35,3 +35,9 @@ Thumbs.db
 # Logs
 # =========================
 *.log
+
+
+# =========================
+# User-uploaded resumes
+# =========================
+backend/app/storage/resumes/
