@@ -1,5 +1,5 @@
 from uuid import UUID
-
+ 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from pathlib import Path
@@ -13,7 +13,7 @@ from app.services.resume_storage import STORAGE_DIR, save_resume
 from app.core.database import get_db
 from app.repositories.candidate import CandidateRepository
 from app.schemas.candidate import CandidateCreate, CandidateResponse
-
+from app.services.resume_extraction import extract_resume_text
 
 router = APIRouter(
     prefix="/candidates",
@@ -90,11 +90,14 @@ async def upload_resume(
     stored_filename, relative_path = await save_resume(file)
 
     try:
+        stored_path = STORAGE_DIR / stored_filename
+        extracted_text = extract_resume_text(str(stored_path))
         resume = await ResumeRepository.create(
             db=db,
             candidate_id=candidate_id,
             filename=stored_filename,
             file_path=relative_path,
+            extracted_text=extracted_text,
         )
 
         await db.commit()
