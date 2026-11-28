@@ -1,90 +1,6 @@
 
 import mongoose from "mongoose";
 
-const evaluationSchema = new mongoose.Schema(
-  {
-    technicalAccuracy: {
-      type: Number,
-      min: 0,
-      max: 10,
-    },
-
-    completeness: {
-      type: Number,
-      min: 0,
-      max: 10,
-    },
-
-    clarity: {
-      type: Number,
-      min: 0,
-      max: 10,
-    },
-
-    feedback: {
-      type: String,
-    },
-
-    strengths: [String],
-
-    improvements: [String],
-  },
-  { _id: false }
-);
-
-const followUpSchema = new mongoose.Schema(
-  {
-    question: {
-      type: String,
-      required: true,
-    },
-
-    answer: {
-      type: String,
-      default: "",
-    },
-
-    evaluation: {
-      type: evaluationSchema,
-      default: undefined,
-    },
-  },
-  { timestamps: true }
-);
-
-const interviewQuestionSchema = new mongoose.Schema(
-  {
-    question: {
-      type: String,
-      required: true,
-    },
-
-    topic: {
-      type: String,
-      required: true,
-    },
-
-    difficulty: {
-      type: String,
-      enum: ["easy", "medium", "hard"],
-      default: "medium",
-    },
-
-    answer: {
-      type: String,
-      default: "",
-    },
-
-    evaluation: {
-      type: evaluationSchema,
-      default: undefined,
-    },
-
-    followUps: [followUpSchema],
-  },
-  { timestamps: true }
-);
-
 const interviewSchema = new mongoose.Schema(
   {
     user: {
@@ -93,22 +9,10 @@ const interviewSchema = new mongoose.Schema(
       required: true,
     },
 
-    resume: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Resume",
-      required: true,
-    },
-
-    jobDescription: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "JobDescription",
-      default: null,
-    },
-
     interviewType: {
       type: String,
-      enum: ["technical", "behavioral", "mixed"],
-      default: "mixed",
+      enum: ["quiz", "interview"],
+      required: true,
     },
 
     difficulty: {
@@ -119,24 +23,25 @@ const interviewSchema = new mongoose.Schema(
 
     duration: {
       type: Number,
-      min: 1,
       default: 30,
+      min: 5,
+      max: 120,
     },
-
-    questions: [interviewQuestionSchema],
 
     status: {
       type: String,
-      enum: ["scheduled", "in-progress", "completed", "cancelled"],
-      default: "scheduled",
+      enum: ["pending", "in-progress", "completed"],
+      default: "pending",
     },
 
     startedAt: {
       type: Date,
+      default: null,
     },
 
     completedAt: {
       type: Date,
+      default: null,
     },
   },
   {

@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 import cookieParser from "cookie-parser";
 import resumeRoutes from "./routes/resume.routes.js";
+import interviewRoutes from "./routes/interview.routes.js";
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/resumes", resumeRoutes);
-
+app.use("/api/interviews", interviewRoutes);
 app.use(errorHandler);
 
 export default app;
