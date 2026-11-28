@@ -1,6 +1,7 @@
 
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
+import jwt from "jsonwebtoken";
 
 export const registerUser = async ({
   fullName,
@@ -49,4 +50,51 @@ export const registerUser = async ({
 
     throw error;
   }
+};
+
+
+export const loginUser = async ({ email, password }) => {
+  const user = await User.findOne({ email }).select("+passwordHash");
+
+  // Use the same response for unknown emails and incorrect passwords.
+  if (!user) {
+    const error = new Error("Invalid email or password");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const isPasswordValid = await bcrypt.compare(
+    password,
+    user.passwordHash
+  );
+
+  if (!isPasswordValid) {
+    const error = new Error("Invalid email or password");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+
+  const token = jwt.sign(
+    {
+      userId: user._id.toString(),
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+    }
+  );
+
+  return {
+    token,
+    user: {
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    },
+  };
 };
